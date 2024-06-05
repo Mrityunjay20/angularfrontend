@@ -22,7 +22,7 @@ export class LoginComponent {
         alert('Registration Successful');
           console.log("success");
       }, error => {
-        alert('Registration Failed');
+        alert(error.status);
         console.error(error.status);
       });
   }
@@ -39,10 +39,11 @@ export class LoginComponent {
           alert("No User Found");
         }
       }, error => {
-        alert("No User Found");
+        alert(error.error.message || "No User Found");
         console.error(error);
       });
   }
+  
 
 }
 
