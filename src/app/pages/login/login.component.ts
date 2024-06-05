@@ -1,74 +1,67 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
 
+  isSignDivVisiable: boolean = true;
 
-  isSignDivVisiable: boolean  = true;
+  signUpObj: SignUpModel = new SignUpModel();
+  loginObj: LoginModel = new LoginModel();
 
-  signUpObj: SignUpModel  = new SignUpModel();
-  loginObj: LoginModel  = new LoginModel();
+  constructor(private router: Router, private http: HttpClient) {}
 
-  constructor(private router: Router){}
-
-
-  onRegister() {
-    debugger;
-    const localUser = localStorage.getItem('angular17users');
-    if(localUser != null) {
-      const users =  JSON.parse(localUser);
-      users.push(this.signUpObj);
-      localStorage.setItem('angular17users', JSON.stringify(users))
-    } else {
-      const users = [];
-      users.push(this.signUpObj);
-      localStorage.setItem('angular17users', JSON.stringify(users))
-    }
-    alert('Registration Success')
+   onRegister() {
+     this.http.post('http://localhost:8080/api/register', this.signUpObj)
+      .subscribe(response => {
+        alert('Registration Successful');
+          console.log("success");
+      }, error => {
+        alert('Registration Failed');
+        console.error(error.status);
+      });
   }
 
   onLogin() {
-    debugger;
-    const localUsers =  localStorage.getItem('angular17users');
-    if(localUsers != null) {
-      const users =  JSON.parse(localUsers);
-
-      const isUserPresent =  users.find( (user:SignUpModel)=> user.email == this.loginObj.email && user.password == this.loginObj.password);
-      if(isUserPresent != undefined) {
-        alert("User Found...");
-        localStorage.setItem('loggedUser', JSON.stringify(isUserPresent));
-        this.router.navigateByUrl('/dashboard');
-      } else {
-        alert("No User Found")
-      }
-    }
+    this.http.post('http://localhost:8080/api/login', this.loginObj)
+      .subscribe((response: any) => {
+        console.log(response);
+        if (response && response.token) {
+          alert("User Found...");
+          localStorage.setItem('loggedUser', JSON.stringify(response));
+          this.router.navigateByUrl('/dashboard');
+        } else {
+          alert("No User Found");
+        }
+      }, error => {
+        alert("No User Found");
+        console.error(error);
+      });
   }
 
 }
 
-export class SignUpModel  {
-  name: string;
+export class SignUpModel {
   email: string;
   password: string;
 
   constructor() {
     this.email = "";
-    this.name = "";
-    this.password= ""
+    this.password = "";
   }
 }
 
-export class LoginModel  { 
+export class LoginModel {
   email: string;
   password: string;
 
   constructor() {
-    this.email = ""; 
-    this.password= ""
+    this.email = "";
+    this.password = "";
   }
 }

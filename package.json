@@ -1,5 +1,5 @@
 {
-  "name": "angular17-login-signup-localstorage",
+  "name": "angular17-login-signup",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
